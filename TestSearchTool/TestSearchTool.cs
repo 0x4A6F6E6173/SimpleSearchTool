@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using SearchTool;
+using SearchTool.Datatypes;
+using SearchTool.Solver;
 
 namespace TestSearchTool
 {
@@ -108,13 +110,13 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchForFullTheSearchSpace_WithoutWildcard()
         {
             var searchSpace = "searchSpaceString";
-            var searchQuery = searchSpace;
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = searchSpace;
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>> {
                 new List<Token> { new RecordToken(searchSpace, 0) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -123,13 +125,13 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchForASubstringInSearchSpace_WithoutWildcard()
         {
             var searchSpace = "searchSpaceString";
-            var searchQuery = "Space";
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = "Space";
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>> {
-                new List<Token> { new RecordToken(searchQuery, 6) }
+                new List<Token> { new RecordToken(searchQuery0, 6) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -138,11 +140,11 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchForSomeString_SearchspaceContainsWildcardOnly()
         {
             var searchSpace = wildcardString;
-            var searchQuery = "someString";
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = "someString";
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>>();
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -151,11 +153,11 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchWithWildcardOnly_EmptySearchspace()
         {
             var searchSpace = "";
-            var searchQuery = wildcardString;
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = wildcardString;
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>>();
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -164,13 +166,13 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchWithoutWildcard_FindString()
         {
             var searchSpace = "lorem ipsum dolor sit amet. Consectetuloer";
-            var searchQuery = "ipsum";
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = "ipsum";
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>> {
-                new List<Token> { new RecordToken(searchQuery, 6) }
+                new List<Token> { new RecordToken(searchQuery0, 6) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -179,11 +181,11 @@ namespace TestSearchTool
         public void GenericWildcardSearch_SearchWithoutWildcard_DontFindString()
         {
             var searchSpace = "lorem ipsum dolor sit amet. Consectetuloer";
-            var searchQuery = "adipiscing";
-            var query = new Query(searchSpace, searchQuery);
+            var searchQuery0 = "adipiscing";
+            var query = new Query(searchSpace, searchQuery0);
             var expectedResult = new List<List<Token>>();
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -194,17 +196,17 @@ namespace TestSearchTool
             var searchSpace = "lorem ipsum dolor sit amet. Consectetuloer";
             var querySubstring0 = "m i";
             var querySubstring1 = "et. ";
-            var wildcardToken = "psum dolor sit am";
+            var wildcardToken0 = "psum dolor sit am";
             var searchQuery = querySubstring0 + wildcardString + querySubstring1;
             var query = new Query(searchSpace, searchQuery);
             var expectedResult = new List<List<Token>> {
-                 new List<Token> { 
-                     new RecordToken(querySubstring0, 4), 
-                     new WildcardToken(wildcardToken, 7),
+                 new List<Token> {
+                     new RecordToken(querySubstring0, 4),
+                     new WildcardToken(wildcardToken0, 7),
                      new RecordToken("et. ", 24) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -229,7 +231,7 @@ namespace TestSearchTool
                     new RecordToken(querySubstring2, 24) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -238,14 +240,14 @@ namespace TestSearchTool
         public void GenericWildcardSearch_WildcardPlacedAtTheStartOfSearchQuery()
         {
             var searchSpace = "lorem ipsum dolor sit amet. Consectetuloer";
-            var querySubstring = "dolor";
-            var searchQuery = wildcardString + querySubstring;
+            var querySubstring0 = "dolor";
+            var searchQuery = wildcardString + querySubstring0;
             var query = new Query(searchSpace, searchQuery);
             var expectedResult = new List<List<Token>> {
-                new List<Token> { new RecordToken(querySubstring, 12) }
+                new List<Token> { new RecordToken(querySubstring0, 12) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -254,14 +256,14 @@ namespace TestSearchTool
         public void GenericWildcardSearch_WildcardPlacedAtTheEndOfSearchQuery()
         {
             var searchSpace = "lorem ipsum dolor sit amet. Consectetuloer";
-            var querySubstring = "dolor";
-            var searchQuery = querySubstring + wildcardString;
+            var querySubstring0 = "dolor";
+            var searchQuery = querySubstring0 + wildcardString;
             var query = new Query(searchSpace, searchQuery);
             var expectedResult = new List<List<Token>> {
-                new List<Token> { new RecordToken(querySubstring, 12) }
+                new List<Token> { new RecordToken(querySubstring0, 12) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -282,7 +284,7 @@ namespace TestSearchTool
                     new RecordToken(querySubstring1, 12) }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
@@ -307,15 +309,53 @@ namespace TestSearchTool
                 }
             };
 
-            var actualResult = Search.GenericWildcardSearch(query);
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
+
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GenericWildcardSearch_SearchQueryFromPractice()
+        {
+            var searchSpace = "1. A;sb. ";
+            var querySubstring = ";";
+            var wildcardToken0 = "1. A";
+            var wildcardToken1 = "sb. ";
+            var searchQuery = wildcardString + querySubstring + wildcardString;
+            var query = new Query(searchSpace, searchQuery);
+            var expectedResult = new List<List<Token>>
+            {
+                new List<Token>
+                {
+                    new WildcardToken(wildcardToken0, 0),
+                    new RecordToken(querySubstring, 4),
+                    new WildcardToken(wildcardToken1, 5)
+                }
+            };
+
+            var actualResult = Search.WildcardSearch(query, new GenericWildcardSolver());
 
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
     }
 
     [TestFixture]
+    public class Search_TestFindStrings
+    {
+        [Test]
+        public void Ttest()
+        {
+
+        }
+    }
+
+    [TestFixture]
     public class Search_TestSemanticWildcardSearch
     {
+        [Test]
+        public void Ttest()
+        {
 
+        }
     }
 }
